@@ -214,7 +214,7 @@ export default function App() {
   }
   return <>
     <a className="skip-link" href="#main" onClick={e => { e.preventDefault(); document.getElementById('main').focus(); }}>본문으로 바로가기</a>
-    <main id="main" tabIndex={-1} className={view === 'generator' ? 'generator-layout' : 'card-layout'}>
+    <main id="main" tabIndex={-1} className={view === 'generator' ? 'generator-layout' : view === 'greeting' ? 'scenic-layout' : 'card-layout'}>
       {view === 'generator' ? <Generator initialParams={params} /> : view === 'greeting' ? <Greeting params={params} onLanguage={onLanguage} headingRef={heading} /> : <Cover params={params} onLanguage={onLanguage} onOpen={openGreeting} opening={opening} />}
     </main>
     {view === 'greeting' && <nav className="utility-nav" aria-label="연하장 추가 메뉴">
