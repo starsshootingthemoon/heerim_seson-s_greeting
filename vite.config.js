@@ -15,7 +15,7 @@ export default defineConfig(({ command, mode, isPreview }) => {
       name: 'static-common-open-graph',
       transformIndexHtml: {
         order: 'pre',
-        handler: html => html.replaceAll('__SITE_URL__', site.href).replaceAll('__OG_IMAGE_URL__', new URL('assets/og-card-v2.png', site).href),
+        handler: html => html.replaceAll('__SITE_URL__', site.href).replaceAll('__OG_IMAGE_URL__', new URL('assets/og-card-figma.png', site).href),
       },
     }],
     server: { host: '127.0.0.1' },
