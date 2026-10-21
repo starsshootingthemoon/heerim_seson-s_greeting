@@ -137,8 +137,8 @@ function Generator({ initialParams }) {
       <p className="studio-label" lang="en">HEERIM / GREETING STUDIO</p>
       <h1>연하장 생성</h1>
       <p className="form-intro">수신자와 전달 언어를 선택하면<br />준비된 언어별 인사말을 적용합니다.</p>
-      {input('to', '01  받는 분', '김민선', true)}
-      {input('company', '02  회사명', 'ABC 건축', true)}
+      {input('to', '01  받는 분', '이름', true)}
+      {input('company', '02  회사명', '회사명', true)}
       <fieldset className="language-field">
         <legend>03  전달 언어</legend>
         <div className="language-options">
