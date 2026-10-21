@@ -1,4 +1,5 @@
 import Logo from './Logo.jsx';
+import ScenicSnow from './ScenicSnow.jsx';
 import React, { useEffect, useRef, useState } from 'react';
 import { getTranslation, languages, translations } from './data/translations.js';
 import { getSender, messageOptions, senders } from './data/senders.js';
@@ -9,9 +10,9 @@ const asset = name => `${import.meta.env.BASE_URL}assets/${name}`;
 const pageUrl = () => new URL(import.meta.env.BASE_URL, window.location.origin).href;
 const locationState = () => ({ params: readPersonalization(window.location.search), view: window.location.hash === '#generator' ? 'generator' : window.location.hash === '#greeting' ? 'greeting' : 'cover' });
 
-function Header({ lang, onLanguage }) {
+function Header({ lang, onLanguage, light = false }) {
   return <header className="card-header">
-    <a className="wordmark" href={import.meta.env.BASE_URL} aria-label="HEERIM 2026 연하장 첫 화면"><Logo /></a>
+    <a className="wordmark" href={import.meta.env.BASE_URL} aria-label="HEERIM 2026 연하장 첫 화면"><Logo light={light} /></a>
     <nav className="language-menu" aria-label="연하장 언어 선택">
       {languages.map(({ code, short, label }) => <button key={code} type="button" lang="en" aria-label={label} aria-pressed={lang === code} onClick={() => onLanguage(code)}>{short}</button>)}
     </nav>
@@ -51,14 +52,16 @@ function Greeting({ params, onLanguage, headingRef }) {
   const t = getTranslation(params.lang);
   const sender = getSender(params);
   const paragraphs = messageOptions[params.message].paragraphIndexes.map(i => t.greeting[i]);
-  return <article className="greeting-card greeting-view">
-    <Header lang={params.lang} onLanguage={onLanguage} />
+  const [snowPaused, setSnowPaused] = useState(false);
+  return <article className={`greeting-card greeting-view scenic-greeting${snowPaused ? ' snow-paused' : ''}`} style={{ '--scenic-background': `url("${asset('greeting-background.webp')}")` }}>
+    <img className="scenic-background-image" src={asset('greeting-background.webp')} alt="" aria-hidden="true" />
+    <ScenicSnow />
+    <Header lang={params.lang} onLanguage={onLanguage} light />
     <div className="greeting-heading">
       {params.to && <p className="to-line">TO. {params.to}{params.lang === 'ko' ? ' 님' : ''}</p>}
       <h1 ref={headingRef} tabIndex={-1} lang={t.contentLang}>{t.headline}</h1>
-      <p className="sheep-year" lang="en">2026 · THE YEAR OF THE RED SHEEP</p>
+      <p className="sheep-year" lang="en">2026 · SEASON’S GREETINGS</p>
     </div>
-    <div className="greeting-sheep asset-layer"><img src={asset('sheep.svg')} width="215.012" height="149.966" alt="2026 붉은 양 일러스트레이션" /></div>
     <div className="personalized-message">
       {recipientLabel(params, true) && <p className="message-recipient">{recipientLabel(params, true)}</p>}
       {paragraphs.map((p, i) => <p className="message-paragraph reveal" lang={t.contentLang} key={`${params.lang}-${i}`}>{p}</p>)}
@@ -68,10 +71,7 @@ function Greeting({ params, onLanguage, headingRef }) {
         {sender.signature && <img className="signature" src={`${import.meta.env.BASE_URL}${sender.signature}`} alt={`${sender.name} 서명`} loading="lazy" />}
       </div>
     </div>
-    <figure className="architecture">
-      <picture style={{ maskImage: `url("${asset('architecture-mask.svg')}")` }}><source srcSet={asset('architecture.webp')} type="image/webp" /><img src={asset('architecture.png')} width="1536" height="1024" loading="lazy" decoding="async" alt="희림건축 정부대전지방합동청사 건축 이미지의 붉은 하프톤" /></picture>
-      <figcaption><Logo /></figcaption>
-    </figure>
+    <footer className="scenic-footer"><Logo light /><button className="snow-control" type="button" aria-pressed={snowPaused} onClick={() => setSnowPaused(p => !p)}>{snowPaused ? '배경 모션 재생' : '배경 모션 정지'}</button></footer>
   </article>;
 }
 

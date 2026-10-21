@@ -37,8 +37,8 @@ try {
     await page.getByRole('button', { name: /새해 인사 열어보기/ }).click();
     await page.waitForURL('**#greeting');
     await page.getByRole('heading', { name: /새로운 해/ }).waitFor();
-    await page.locator('.architecture').scrollIntoViewIfNeeded();
-    await page.waitForFunction(() => [...document.querySelectorAll('.architecture img')].every(i => i.complete && i.naturalWidth));
+    await page.locator('.scenic-background-image').scrollIntoViewIfNeeded();
+    await page.waitForFunction(() => [...document.querySelectorAll('.scenic-background-image')].every(i => i.complete && i.naturalWidth));
     await ready(); await noOverflow(`greeting ${width}`);
     await page.screenshot({ path: `test-results/greeting-${width}.png`, fullPage: true });
     const greetingAssets = await assetGeometry();
