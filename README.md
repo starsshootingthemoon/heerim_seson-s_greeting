@@ -66,6 +66,22 @@ VITE_SITE_URL=https://your-actual-domain/path/ npm run build
 
 참고: [Vite 공식 GitHub Pages 가이드](https://vite.dev/guide/static-deploy.html#github-pages).
 
+## Cloudflare Pages에 연결
+
+개인 GitHub 아이디가 포함되지 않는 `프로젝트명.pages.dev` 기본 주소로 배포할 수 있습니다. 아직 생성되지 않은 주소를 실제 배포 주소로 사용하지 않습니다.
+
+1. Cloudflare에 로그인한 뒤 **Workers & Pages → Create application → Pages → Connect to Git**에서 GitHub를 연결합니다.
+2. `starsshootingthemoon/heerim_seson-s_greeting` 저장소를 선택합니다. 권한을 요청하면 해당 저장소만 선택합니다.
+3. 프로젝트 이름은 사용 가능한 희림 연하장용 이름을 지정합니다. Production branch는 `main`입니다.
+4. Build command는 `npm run build`, Build output directory는 `dist`, Root directory는 저장소 루트로 둡니다.
+5. Node.js는 `.node-version`의 24를 사용합니다. 이전에 GitHub Pages 주소로 설정한 `VITE_SITE_URL`이 있으면 제거합니다.
+6. Cloudflare가 제공하는 `CF_PAGES_URL`을 자동으로 읽어 루트 에셋 경로와 공통 OG를 생성합니다. 공식 도메인이 생기면 `VITE_SITE_URL`에 그 도메인을 지정할 수 있습니다.
+7. 배포 후 발급된 실제 주소에서 연하장·링크 생성기·언어 전환·대표 이미지를 검증합니다.
+
+기존 GitHub Pages 배포와 설정은 유지됩니다. GitHub에 수정 사항을 push하면 연결된 Cloudflare Pages에서도 다시 빌드합니다. Cloudflare 계정 로그인과 최초 GitHub 연결 권한 승인이 필요합니다.
+
+참고: [Cloudflare Git integration 가이드](https://developers.cloudflare.com/pages/get-started/git-integration/).
+
 ## 공유·OG
 
 모든 링크는 빌드 시 HTML에 포함한 공통 OG 이미지·제목·설명을 사용합니다. 수신자별 문구는 JavaScript가 화면 안에서 변경합니다. 메신저 크롤러가 JavaScript를 실행하지 않아도 공통 OG를 읽을 수 있습니다. 개인별 미리보기·캐시 갱신·메신저별 표시를 보장하지 않습니다. 배포 후 실제 카카오톡·문자·이메일에서 확인하세요.

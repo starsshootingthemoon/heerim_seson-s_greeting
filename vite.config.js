@@ -4,7 +4,8 @@ import react from '@vitejs/plugin-react';
 export default defineConfig(({ command, mode, isPreview }) => {
   const env = loadEnv(mode, process.cwd(), 'VITE_');
   // 기본값은 사용자가 지정한 실제 저장소의 예상 Pages 경로입니다. 배포 성공을 의미하지 않습니다.
-  const site = new URL(env.VITE_SITE_URL || 'https://starsshootingthemoon.github.io/heerim_seson-s_greeting/');
+  // Cloudflare Pages가 실제 빌드 주소를 제공하면 루트 경로와 OG를 그 주소에 맞춥니다.
+  const site = new URL(env.VITE_SITE_URL || process.env.CF_PAGES_URL || 'https://starsshootingthemoon.github.io/heerim_seson-s_greeting/');
   if (!['https:', 'http:'].includes(site.protocol)) throw new Error('VITE_SITE_URL must use HTTP(S).');
   if (!site.pathname.endsWith('/')) site.pathname += '/';
   site.search = ''; site.hash = '';
