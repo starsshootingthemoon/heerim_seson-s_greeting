@@ -1,0 +1,17 @@
+{
+  "fileKey": "FDKWbMY2G1O6XVcT0La8Jw",
+  "screens": ["31:17860", "31:19295", "31:20726", "31:20804"],
+  "modalContent": "31:20805",
+  "assets": {
+    "envelope-back.svg": { "node": "31:17867", "slot": "진입 화면 봉투 후면", "original": true },
+    "envelope-front.svg": { "node": "31:19283", "slot": "진입 화면 봉투 전면", "original": true },
+    "sheep.svg": { "node": "31:19302", "slot": "카드 내부와 인사 화면", "original": true },
+    "architecture.png": { "node": "31:20719", "slot": "인사 화면 하단", "original": true },
+    "architecture.webp": { "source": "architecture.png", "note": "원본을 1000px WebP로 최적화", "slot": "인사 화면 하단" },
+    "architecture-mask.svg": { "node": "31:20720", "slot": "건축 이미지 마스크", "original": true },
+    "share.svg": { "node": "31:20812", "slot": "완료 모달 공유 버튼", "original": true },
+    "og-card.png": { "node": "31:3544", "slot": "정적 Open Graph 공통 이미지", "original": true }
+  },
+  "wordmark": "시안은 Cormorant Garamond Italic의 heerim 텍스트를 사용합니다. 동일한 폰트로 재현합니다.",
+  "intentionalAdjustments": ["연도는 2027로 통일", "수신자는 URL 값으로 일관되게 표시", "입력 글자는 모바일 입력 확대를 방지하도록 16px", "번역 미제공 언어의 한국어 폴백 안내"]
+}
