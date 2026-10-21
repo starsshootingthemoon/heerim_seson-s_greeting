@@ -2,13 +2,13 @@
 // 승인되지 않은 서명이나 발신자 이름을 임의로 생성하지 않습니다.
 export const senders = {
   heerim: {
-    names: { ko: '(주)희림종합건축사사무소', en: 'Heerim Architects & Planners Co., Ltd.', az: 'Heerim Architects & Planners Co., Ltd.' },
+    names: { ko: '(주)희림종합건축사사무소', en: 'Heerim Architects & Planners Co., Ltd.', ru: 'Heerim Architects & Planners Co., Ltd.', vi: 'Heerim Architects & Planners Co., Ltd.', az: 'Heerim Architects & Planners Co., Ltd.' },
     titles: { ko: '', en: '', az: '' },
     signature: null,
     message: 'standard',
   },
   ceo: {
-    names: { ko: '희림종합건축사사무소', en: 'Heerim Architects & Planners Co., Ltd.', az: 'Heerim Architects & Planners Co., Ltd.' },
+    names: { ko: '희림종합건축사사무소', en: 'Heerim Architects & Planners Co., Ltd.', ru: 'Heerim Architects & Planners Co., Ltd.', vi: 'Heerim Architects & Planners Co., Ltd.', az: 'Heerim Architects & Planners Co., Ltd.' },
     titles: { ko: '대표이사', en: '', az: '' },
     signature: null,
     message: 'standard',

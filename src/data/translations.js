@@ -29,18 +29,30 @@ export const translations = {
     ],
   },
   ru: {
-    label: '러시아어', short: 'RU', status: 'pending', source: null,
-    pendingReview: ['공식 인사말·UI 번역 제공 및 검수'],
-    headline: null, year: null, greeting: null, ui: null,
+    label: '러시아어', short: 'RU', status: 'partial',
+    source: '사용자가 제공한 러시아어 공식 GIF 연하장. 2026 → 2027 연도 치환.',
+    pendingReview: ['2027년용 번역 검수', '진입 화면·UI 번역'],
+    headline: 'Поздравления с наступающим\nновым годом', year: null, ui: null,
+    greeting: [
+      'Мы выражаем искреннюю благодарность за Вашу неизменную поддержку на протяжении всего года.',
+      'Компания Heerim продолжает смело выходить на международные рынки, открывая новые горизонты благодаря инновациям в модульной архитектуре и интеграции современных интеллектуальных технологий.',
+      'Пусть 2027 год принесёт Вам рост, процветание и совместные успехи вместе с Heerim.',
+    ],
   },
   vi: {
-    label: '베트남어', short: 'VI', status: 'pending', source: null,
-    pendingReview: ['공식 인사말·UI 번역 제공 및 검수'],
-    headline: null, year: null, greeting: null, ui: null,
+    label: '베트남어', short: 'VI', status: 'partial',
+    source: '사용자가 제공한 베트남어 공식 GIF 연하장. 2026 → 2027 연도 치환.',
+    pendingReview: ['2027년용 번역 검수', '진입 화면·UI 번역', '원문의 Mã Đáo Thành Công 표현과 붉은 양 콘셉트의 적합성 검수'],
+    headline: 'Lời chúc mừng năm mới', year: null, ui: null,
+    greeting: [
+      'Chúng tôi vô cùng trân trọng sự ủng hộ của Quý vị trong suốt năm qua.',
+      'Heerim không ngừng đón nhận thử thách trên thị trường toàn cầu, và mở ra những chân trời mới thông qua sự kết hợp giữa sự đột phá trong kiến trúc mô đun và tích hợp công nghệ thông minh.',
+      'Chúc Quý vị năm mới 2027 là một năm Mã Đáo Thành Công cùng Heerim.',
+    ],
   },
   az: {
     label: '아제르바이잔어', short: 'AZ', status: 'partial',
-    source: '사용자가 제공한 아제르바이잔어 공식 연하장 이미지. 연도만 변경.',
+    source: '사용자가 제공한 아제르바이잔어 공식 GIF 연하장. 2026 → 2027 연도 치환.',
     pendingReview: ['2027년용 번역 검수', '진입 화면·UI 번역'],
     headline: 'Yeni il təbriki', year: null, ui: null,
     greeting: [

@@ -51,7 +51,9 @@ try {
   for (const lang of ['ko', 'en', 'ru', 'vi', 'az']) {
     await page.goto(url(`?to=Kim&company=ABC&lang=${lang}`, '#greeting'));
     await ready(); await noOverflow(lang);
-    if (['ru', 'vi'].includes(lang)) assert.match(await page.locator('.translation-notice').textContent(), /검수 대기/);
+    if (lang === 'ru') assert.match(await page.locator('h1').textContent(), /Поздравления/);
+    if (lang === 'vi') assert.match(await page.locator('h1').textContent(), /Lời chúc/);
+    if (lang !== 'ko') assert.match(await page.locator('.translation-notice').textContent(), /미제공 UI/);
     if (lang === 'en') assert.match(await page.locator('h1').textContent(), /Season/);
     if (lang === 'az') assert.match(await page.locator('h1').textContent(), /Yeni/);
   }

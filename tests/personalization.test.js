@@ -30,13 +30,16 @@ test('공백 입력과 미입력 발신자를 검증합니다', () => {
   assert.equal(Object.keys(validateForm({ to: 'Kim', company: 'ABC', lang: 'en', from: 'heerim' })).length, 0);
 });
 
-test('검수 대기 언어를 번역 완료로 표현하지 않고 한국어로 폴백합니다', () => {
-  for (const code of ['ru', 'vi']) {
-    assert.equal(translations[code].greeting, null);
-    assert.equal(getTranslation(code).contentLang, 'ko');
-    assert.match(getTranslation(code).notice, /검수 대기/);
+test('제공된 5개 언어 인사말을 표시하고 미제공 UI만 한국어로 폴백합니다', () => {
+  for (const code of ['en', 'ru', 'vi', 'az']) {
+    assert.equal(translations[code].status, 'partial');
+    assert.equal(getTranslation(code).contentLang, code);
+    assert.match(getTranslation(code).greeting[2], /2027/);
+    assert.equal(getTranslation(code).ui.open, translations.ko.ui.open);
+    assert.match(getTranslation(code).notice, /미제공 UI/);
   }
-  assert.match(getTranslation('en').greeting[2], /2027/);
-  assert.match(getTranslation('az').greeting[2], /2027/);
+  assert.match(translations.ru.headline, /Поздравления/);
+  assert.match(translations.vi.headline, /Lời chúc/);
+  assert.ok(translations.vi.pendingReview.some(x => x.includes('Mã Đáo Thành Công')));
   assert.equal(Object.keys(translations).length, 5);
 });
