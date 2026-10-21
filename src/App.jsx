@@ -17,11 +17,6 @@ function Header({ lang, onLanguage }) {
   </header>;
 }
 
-function TranslationNotice({ lang }) {
-  const t = getTranslation(lang);
-  return t.notice ? <p className="translation-notice" role="status" lang="ko">{t.notice}</p> : null;
-}
-
 function Envelope({ opening }) {
   return <div className={`envelope-scene${opening ? ' is-opening' : ''}`} aria-hidden="true">
     <div className="envelope-back asset-layer"><img src={asset('envelope-back.svg')} width="316.194" height="307.16" alt="" /></div>
@@ -47,7 +42,6 @@ function Cover({ params, onOpen, opening, onLanguage }) {
     <p className="cover-recipient">{recipientLabel(params)}</p>
     <button className="primary open-button" onClick={onOpen} disabled={opening}>{opening ? '인사를 열고 있습니다…' : t.ui.open} <span aria-hidden="true">↗</span></button>
     <p className="cover-tagline">{t.ui.tag}</p>
-    <TranslationNotice lang={params.lang} />
     <footer className="card-footer" lang="en">HEERIM ARCHITECTS &amp; PLANNERS</footer>
   </article>;
 }
@@ -73,7 +67,6 @@ function Greeting({ params, onLanguage, headingRef }) {
         {sender.signature && <img className="signature" src={`${import.meta.env.BASE_URL}${sender.signature}`} alt={`${sender.name} 서명`} loading="lazy" />}
       </div>
     </div>
-    <TranslationNotice lang={params.lang} />
     <figure className="architecture">
       <picture style={{ maskImage: `url("${asset('architecture-mask.svg')}")` }}><source srcSet={asset('architecture.webp')} type="image/webp" /><img src={asset('architecture.png')} width="1536" height="1024" loading="lazy" decoding="async" alt="희림건축 정부대전지방합동청사 건축 이미지의 붉은 하프톤" /></picture>
       <figcaption>HEERIM</figcaption>
@@ -150,11 +143,10 @@ function Generator({ initialParams }) {
         <legend>03  전달 언어</legend>
         <div className="language-options">
           {languages.map(({ code, label, status: translationStatus }, index) => <React.Fragment key={code}><label className={`language-option${form.lang === code ? ' selected' : ''}`}>
-            <input type="radio" name="lang" value={code} checked={form.lang === code} onChange={() => changeLanguage(code)} aria-describedby="language-review" />
+            <input type="radio" name="lang" value={code} checked={form.lang === code} onChange={() => changeLanguage(code)} />
             <span>{label}{translationStatus === 'pending' && <span className="sr-only"> (번역 검수 대기)</span>}</span>
           </label>{index === 1 && <span className="language-row-break" aria-hidden="true" />}</React.Fragment>)}
         </div>
-        <p className="field-help" id="language-review">{form.lang === 'ko' ? '검수된 번역문을 적용하며, 자동 번역과 구분하여 운영합니다.' : getTranslation(form.lang).notice}</p>
       </fieldset>
       <div className="field">
         <label htmlFor="from">04  보내는 분</label>
@@ -226,9 +218,8 @@ export default function App() {
     <main id="main" tabIndex={-1} className={view === 'generator' ? 'generator-layout' : 'card-layout'}>
       {view === 'generator' ? <Generator initialParams={params} /> : view === 'greeting' ? <Greeting params={params} onLanguage={onLanguage} headingRef={heading} /> : <Cover params={params} onLanguage={onLanguage} onOpen={openGreeting} opening={opening} />}
     </main>
-    <nav className="utility-nav" aria-label="연하장 추가 메뉴">
-      {view === 'greeting' && <a href="#">{getTranslation(params.lang).ui.back}</a>}
-      {view === 'generator' ? <a href={import.meta.env.BASE_URL}>연하장 첫 화면</a> : <a href="#generator">{getTranslation(params.lang).ui.create}</a>}
-    </nav>
+    {view === 'greeting' && <nav className="utility-nav" aria-label="연하장 추가 메뉴">
+      <a href="#">{getTranslation(params.lang).ui.back}</a>
+    </nav>}
   </>;
 }

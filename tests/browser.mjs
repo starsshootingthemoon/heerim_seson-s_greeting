@@ -53,7 +53,7 @@ try {
     await ready(); await noOverflow(lang);
     if (lang === 'ru') assert.match(await page.locator('h1').textContent(), /Поздравления/);
     if (lang === 'vi') assert.match(await page.locator('h1').textContent(), /Lời chúc/);
-    if (lang !== 'ko') assert.match(await page.locator('.translation-notice').textContent(), /미제공 UI/);
+    assert.equal(await page.locator('.translation-notice, a[href="#generator"]').count(), 0);
     if (lang === 'en') assert.match(await page.locator('h1').textContent(), /Season/);
     if (lang === 'az') assert.match(await page.locator('h1').textContent(), /Yeni/);
   }
