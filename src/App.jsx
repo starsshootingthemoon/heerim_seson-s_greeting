@@ -11,7 +11,7 @@ const locationState = () => ({ params: readPersonalization(window.location.searc
 
 function Header({ lang, onLanguage }) {
   return <header className="card-header">
-    <a className="wordmark" href={import.meta.env.BASE_URL} aria-label="HEERIM 2027 연하장 첫 화면"><Logo /></a>
+    <a className="wordmark" href={import.meta.env.BASE_URL} aria-label="HEERIM 2026 연하장 첫 화면"><Logo /></a>
     <nav className="language-menu" aria-label="연하장 언어 선택">
       {languages.map(({ code, short, label }) => <button key={code} type="button" lang="en" aria-label={label} aria-pressed={lang === code} onClick={() => onLanguage(code)}>{short}</button>)}
     </nav>
@@ -36,7 +36,7 @@ function Cover({ params, onOpen, opening, onLanguage }) {
     <Header lang={params.lang} onLanguage={onLanguage} />
     <div className="cover-intro">
       <p className="eyebrow" lang="en">A NEW YEAR, FOR YOU</p>
-      <h1 className="year-title">2027</h1>
+      <h1 className="year-title">2026</h1>
       <p className="year-caption" lang={params.lang === 'ko' ? 'ko' : t.year === translations.ko.year ? 'ko' : params.lang}>{t.year}</p>
     </div>
     <Envelope opening={opening} />
@@ -54,13 +54,13 @@ function Greeting({ params, onLanguage, headingRef }) {
   return <article className="greeting-card greeting-view">
     <Header lang={params.lang} onLanguage={onLanguage} />
     <div className="greeting-heading">
-      <p className="to-line">TO. {params.to}{params.lang === 'ko' ? ' 님' : ''}</p>
+      {params.to && <p className="to-line">TO. {params.to}{params.lang === 'ko' ? ' 님' : ''}</p>}
       <h1 ref={headingRef} tabIndex={-1} lang={t.contentLang}>{t.headline}</h1>
-      <p className="sheep-year" lang="en">2027 · THE YEAR OF THE RED SHEEP</p>
+      <p className="sheep-year" lang="en">2026 · THE YEAR OF THE RED SHEEP</p>
     </div>
-    <div className="greeting-sheep asset-layer"><img src={asset('sheep.svg')} width="215.012" height="149.966" alt="2027 붉은 양 일러스트레이션" /></div>
+    <div className="greeting-sheep asset-layer"><img src={asset('sheep.svg')} width="215.012" height="149.966" alt="2026 붉은 양 일러스트레이션" /></div>
     <div className="personalized-message">
-      <p className="message-recipient">{recipientLabel(params, true)}</p>
+      {recipientLabel(params, true) && <p className="message-recipient">{recipientLabel(params, true)}</p>}
       {paragraphs.map((p, i) => <p className="message-paragraph reveal" lang={t.contentLang} key={`${params.lang}-${i}`}>{p}</p>)}
       <div className="sender-block reveal">
         <p className="sender-name">{sender.name}{params.lang === 'ko' ? ' 드림' : ''}</p>
@@ -137,11 +137,9 @@ function Generator({ initialParams }) {
     <form className="generator-form" ref={formRef} onSubmit={submit} noValidate>
       <div className="studio-label"><Logo /><span lang="en">GREETING STUDIO</span></div>
       <h1>연하장 생성</h1>
-      <p className="form-intro">수신자와 전달 언어를 선택하면<br />준비된 언어별 인사말을 적용합니다.</p>
-      {input('to', '01  받는 분', '이름', true)}
-      {input('company', '02  회사명', '회사명', true)}
+      <p className="form-intro">전달 언어와 보내는 분을 선택하면<br />준비된 언어별 인사말을 적용합니다.</p>
       <fieldset className="language-field">
-        <legend>03  전달 언어</legend>
+        <legend>01  전달 언어</legend>
         <div className="language-options">
           {languages.map(({ code, label, status: translationStatus }, index) => <React.Fragment key={code}><label className={`language-option${form.lang === code ? ' selected' : ''}`}>
             <input type="radio" name="lang" value={code} checked={form.lang === code} onChange={() => changeLanguage(code)} />
@@ -150,7 +148,7 @@ function Generator({ initialParams }) {
         </div>
       </fieldset>
       <div className="field">
-        <label htmlFor="from">04  보내는 분</label>
+        <label htmlFor="from">02  보내는 분</label>
         <select id="from" name="from" value={form.from} onChange={onChange}>
           {Object.entries(senders).map(([id, sender]) => <option key={id} value={id}>{sender.names.ko}{sender.titles.ko ? ` · ${sender.titles.ko}` : ''}</option>)}
           <option value="custom">이름·소속 직접 입력</option>
@@ -178,7 +176,7 @@ function Generator({ initialParams }) {
           <p role="status" className="live-status">{status}</p>
         </>}
       </section>
-      <p className="privacy-note">이름과 회사명은 링크에 포함됩니다. 공개 가능한 정보만 입력해 주세요. 입력 정보는 서버나 브라우저 저장소에 저장하지 않습니다.</p>
+      <p className="privacy-note">선택한 언어와 발신자 정보로 링크를 생성합니다. 입력 정보는 서버나 브라우저 저장소에 저장하지 않습니다.</p>
     </form>
     {generated && showPreview && <div className="preview-shell"><iframe title="생성된 개인화 연하장 미리보기" src={generated} loading="lazy" /></div>}
     <CompleteModal open={completed} onClose={closeModal} url={generated} />

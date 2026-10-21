@@ -24,7 +24,7 @@ export default function MotionGreeting({ video = false }) {
     setParams(p => ({ ...p, lang }));
   }
   return <main className={`motion-greeting${video ? ' motion-video-version' : ''}${paused ? ' motion-paused' : ''}`}>
-    <section className="motion-scene" aria-label={video ? '건축물의 완성 과정을 담은 2027 새해 인사' : '건축물의 윤곽을 따라 빛이 흐르는 2027 새해 인사'}>
+    <section className="motion-scene" aria-label={video ? '건축물의 완성 과정을 담은 2026 새해 인사' : '건축물의 윤곽을 따라 빛이 흐르는 2026 새해 인사'}>
       <div className="motion-camera">
         {video ? <video ref={videoRef} className="motion-film" muted playsInline loop autoPlay={!paused} preload="metadata" poster={`${import.meta.env.BASE_URL}assets/v3/poster.webp`} aria-label="건축물 완성 과정 영상">
           <source src={`${import.meta.env.BASE_URL}assets/v3/architecture.mp4`} type="video/mp4" />
@@ -47,15 +47,15 @@ export default function MotionGreeting({ video = false }) {
         </svg>}
       </div>
       <header className="motion-header"><Logo light className="motion-logo" /><nav aria-label="언어 선택">{languages.map(l => <button key={l.code} aria-pressed={params.lang === l.code} onClick={() => language(l.code)}>{l.short}</button>)}</nav></header>
-      <div className="motion-title"><p className="motion-kicker">A NEW LIGHT, A NEW YEAR</p><p className="motion-year">2027</p><h1 lang={t.contentLang}>{params.lang === 'ko' ? '새로운 빛으로, 함께 그리는 내일' : t.headline}</h1><p className="motion-season">Season’s Greetings</p></div>
+      <div className="motion-title"><p className="motion-kicker">A NEW LIGHT, A NEW YEAR</p><p className="motion-year">2026</p><h1 lang={t.contentLang}>{params.lang === 'ko' ? '새로운 빛으로, 함께 그리는 내일' : t.headline}</h1><p className="motion-season">Season’s Greetings</p></div>
       <div className="motion-caption"><Logo light className="motion-caption-logo" /><button type="button" onClick={() => setPaused(p => !p)} aria-pressed={paused}>{paused ? '모션 재생' : '모션 일시정지'}</button></div>
     </section>
     <section className="motion-message" aria-label="맞춤 새해 인사">
       <p className="motion-message-label">WITH OUR SINCERE GRATITUDE</p>
-      <h2>{recipientLabel(params, true)}</h2>
+      {recipientLabel(params, true) && <h2>{recipientLabel(params, true)}</h2>}
       {t.greeting.map((p, i) => <p lang={t.contentLang} className="motion-paragraph" key={i}>{p}</p>)}
       <p className="motion-sender">{sender.name}{params.lang === 'ko' ? ' 드림' : ''}{sender.title && <span>{sender.title}</span>}</p>
-      <footer><Logo className="motion-logo" /><span>2027 NEW YEAR GREETING</span></footer>
+      <footer><Logo className="motion-logo" /><span>2026 NEW YEAR GREETING</span></footer>
     </section>
   </main>;
 }

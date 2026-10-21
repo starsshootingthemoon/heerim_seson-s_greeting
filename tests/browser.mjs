@@ -43,7 +43,7 @@ try {
     await page.screenshot({ path: `test-results/greeting-${width}.png`, fullPage: true });
     const greetingAssets = await assetGeometry();
     assert.ok(greetingAssets.every(a => a.loaded && a.bounds[0] > 0));
-    assert.ok(!(await page.locator('.personalized-message').innerText()).includes('2026'));
+    assert.ok(!(await page.locator('.personalized-message').innerText()).includes('2027'));
     results.push({ width, coverAssets, greetingAssets });
   }
 
@@ -67,12 +67,9 @@ try {
   await page.goto(url('', '#generator'));
   await ready(); await noOverflow('generator');
   await page.screenshot({ path: 'test-results/generator.png', fullPage: true });
-  await page.getByRole('button', { name: /맞춤 연하장 링크 생성/ }).click();
-  assert.equal(await page.locator('[aria-invalid=true]').count(), 2);
-  await page.getByLabel('01  받는 분').fill('김민선 & Əli');
-  await page.getByLabel('02  회사명').fill('ABC 建築');
+  assert.equal(await page.locator('#to, #company').count(), 0);
   await page.getByText('아제르바이잔어', { exact: true }).click();
-  await page.getByLabel('04  보내는 분').selectOption('custom');
+  await page.getByLabel('02  보내는 분').selectOption('custom');
   await page.getByLabel('보내는 분 이름 또는 소속').fill('홍길동');
   await page.getByLabel('직책 (선택)').fill('대표이사');
   await page.getByRole('button', { name: /맞춤 연하장 링크 생성/ }).click();
@@ -84,7 +81,8 @@ try {
   const generated = new URL(await page.evaluate(() => window.__copied));
   assert.equal(generated.pathname, new URL(root).pathname);
   assert.equal(generated.hash, '');
-  assert.equal(generated.searchParams.get('to'), '김민선 & Əli');
+  assert.equal(generated.searchParams.has('to'), false);
+  assert.equal(generated.searchParams.has('company'), false);
   assert.equal(generated.searchParams.get('lang'), 'az');
   assert.equal(generated.searchParams.get('senderName'), '홍길동');
   await modal.getByRole('button', { name: '연하장 링크 공유', exact: true }).click();
@@ -100,7 +98,7 @@ try {
   assert.equal(await page.getByRole('button', { name: /맞춤 연하장 링크 생성/ }).evaluate(n => n === document.activeElement), true);
   await page.getByRole('button', { name: /연하장 미리보기 열기/ }).click();
   await page.frameLocator('iframe').locator('.cover-recipient').waitFor();
-  assert.match(await page.frameLocator('iframe').locator('.cover-recipient').textContent(), /김민선 & Əli/);
+  assert.equal(await page.frameLocator('iframe').locator('.cover-recipient').textContent(), '');
   await page.goto(`${generated.href}#greeting`);
   await page.reload();
   assert.match(await page.locator('.sender-name').textContent(), /홍길동/);

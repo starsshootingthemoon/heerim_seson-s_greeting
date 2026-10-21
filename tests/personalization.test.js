@@ -26,7 +26,7 @@ test('알 수 없는 언어·발신자와 제어문자, 긴 입력을 안전하�
 });
 
 test('공백 입력과 미입력 발신자를 검증합니다', () => {
-  assert.deepEqual(Object.keys(validateForm({ to: ' ', company: '', lang: 'ko', from: 'custom', senderName: '' })), ['to', 'company', 'senderName']);
+  assert.deepEqual(Object.keys(validateForm({ to: ' ', company: '', lang: 'ko', from: 'custom', senderName: '' })), ['senderName']);
   assert.equal(Object.keys(validateForm({ to: 'Kim', company: 'ABC', lang: 'en', from: 'heerim' })).length, 0);
 });
 
@@ -34,7 +34,7 @@ test('제공된 5개 언어 인사말을 표시하고 미제공 UI만 한국어�
   for (const code of ['en', 'ru', 'vi', 'az']) {
     assert.equal(translations[code].status, 'partial');
     assert.equal(getTranslation(code).contentLang, code);
-    assert.match(getTranslation(code).greeting[2], /2027/);
+    assert.match(getTranslation(code).greeting[2], /2026/);
     assert.equal(getTranslation(code).ui.open, translations.ko.ui.open);
     assert.match(getTranslation(code).notice, /미제공 UI/);
   }

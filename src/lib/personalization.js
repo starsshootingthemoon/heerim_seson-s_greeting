@@ -10,7 +10,7 @@ export function readPersonalization(search = '') {
   const q = new URLSearchParams(search);
   const from = q.get('from') === 'custom' ? 'custom' : pick(q.get('from'), senders, 'heerim');
   return {
-    to: cleanText(q.get('to'), LIMITS.to) || '홍길동',
+    to: cleanText(q.get('to'), LIMITS.to),
     company: cleanText(q.get('company'), LIMITS.company) || '',
     lang: pick(q.get('lang'), translations, 'ko'),
     from,
@@ -22,7 +22,7 @@ export function readPersonalization(search = '') {
 
 export function validateForm(values) {
   const errors = {};
-  for (const key of ['to', 'company', ...(values.from === 'custom' ? ['senderName'] : [])]) {
+  for (const key of (values.from === 'custom' ? ['senderName'] : [])) {
     if (!cleanText(values[key], LIMITS[key])) errors[key] = '필수 항목을 입력해 주세요.';
     else if (Array.from(String(values[key])).length > LIMITS[key]) errors[key] = `${LIMITS[key]}자 이내로 입력해 주세요.`;
   }
@@ -36,7 +36,8 @@ export function createGreetingUrl(values, pageUrl) {
   url.hash = '';
   url.search = '';
   const normalized = readPersonalization(new URLSearchParams(values).toString());
-  for (const key of ['to', 'company', 'lang', 'from', 'message']) url.searchParams.set(key, normalized[key]);
+  for (const key of ['lang', 'from', 'message']) url.searchParams.set(key, normalized[key]);
+  for (const key of ['to', 'company']) if (normalized[key]) url.searchParams.set(key, normalized[key]);
   if (normalized.from === 'custom') {
     url.searchParams.set('senderName', normalized.senderName);
     if (normalized.senderTitle) url.searchParams.set('senderTitle', normalized.senderTitle);
@@ -45,6 +46,7 @@ export function createGreetingUrl(values, pageUrl) {
 }
 
 export function recipientLabel(params, expanded = false) {
+  if (!params.to && !params.company) return '';
   const company = params.company ? `${params.company}${params.lang === 'ko' && expanded ? '의 ' : ' · '}` : '';
   return `${company}${params.to}${params.lang === 'ko' ? (expanded ? ' 님께' : ' 님께') : ''}`;
 }

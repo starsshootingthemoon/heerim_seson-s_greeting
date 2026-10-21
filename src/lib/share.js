@@ -17,7 +17,7 @@ export async function copyLink(url) {
 export async function shareLink(url) {
   if (!navigator.share) return (await copyLink(url)) ? 'copied' : 'manual';
   try {
-    await navigator.share({ title: 'HEERIM 2027 New Year Greeting', text: '희림건축이 전하는 2027년 새해 인사', url });
+    await navigator.share({ title: 'HEERIM 2026 New Year Greeting', text: '희림건축이 전하는 2026년 새해 인사', url });
     return 'shared';
   } catch (error) {
     if (error.name === 'AbortError') return 'cancelled';
