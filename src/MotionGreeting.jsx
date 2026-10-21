@@ -1,13 +1,20 @@
 import Logo from './Logo.jsx';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { getTranslation, languages } from './data/translations.js';
 import { readPersonalization, recipientLabel } from './lib/personalization.js';
 import { getSender } from './data/senders.js';
 import './motion.css';
 
-export default function MotionGreeting() {
+export default function MotionGreeting({ video = false }) {
   const [params, setParams] = useState(() => readPersonalization(location.search));
-  const [paused, setPaused] = useState(false);
+  const [paused, setPaused] = useState(() => video && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const videoRef = useRef(null);
+  useEffect(() => {
+    const element = videoRef.current;
+    if (!element) return;
+    if (paused) element.pause();
+    else element.play().catch(() => setPaused(true));
+  }, [paused, video]);
   const t = getTranslation(params.lang);
   const sender = getSender(params);
   useEffect(() => { document.documentElement.lang = params.lang; }, [params.lang]);
@@ -16,10 +23,12 @@ export default function MotionGreeting() {
     history.replaceState({}, '', url); document.documentElement.lang = lang;
     setParams(p => ({ ...p, lang }));
   }
-  return <main className={`motion-greeting${paused ? ' motion-paused' : ''}`}>
-    <section className="motion-scene" aria-label="건축물의 윤곽을 따라 빛이 흐르는 2027 새해 인사">
+  return <main className={`motion-greeting${video ? ' motion-video-version' : ''}${paused ? ' motion-paused' : ''}`}>
+    <section className="motion-scene" aria-label={video ? '건축물의 완성 과정을 담은 2027 새해 인사' : '건축물의 윤곽을 따라 빛이 흐르는 2027 새해 인사'}>
       <div className="motion-camera">
-        <svg className="motion-art" viewBox="0 0 1400 1370" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        {video ? <video ref={videoRef} className="motion-film" muted playsInline loop autoPlay={!paused} preload="metadata" poster={`${import.meta.env.BASE_URL}assets/v3/poster.webp`} aria-label="건축물 완성 과정 영상">
+          <source src={`${import.meta.env.BASE_URL}assets/v3/architecture.mp4`} type="video/mp4" />
+        </video> : <svg className="motion-art" viewBox="0 0 1400 1370" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
           <defs>
             <filter id="light-glow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="4" /></filter>
             <linearGradient id="night-shade" x2="0" y2="1"><stop stopColor="#071321" stopOpacity=".45"/><stop offset=".5" stopColor="#071321" stopOpacity="0"/><stop offset="1" stopColor="#071321" stopOpacity=".24"/></linearGradient>
@@ -35,7 +44,7 @@ export default function MotionGreeting() {
             <path className="trace trace-one" pathLength="1" d="M449 1208 L459 532 L533 465 L675 579 L724 648 L751 1120" />
             <path className="trace trace-two" pathLength="1" d="M820 1121 L818 703 Q820 660 903 616 Q943 624 994 681 L1005 1168" />
           </g>
-        </svg>
+        </svg>}
       </div>
       <header className="motion-header"><Logo light className="motion-logo" /><nav aria-label="언어 선택">{languages.map(l => <button key={l.code} aria-pressed={params.lang === l.code} onClick={() => language(l.code)}>{l.short}</button>)}</nav></header>
       <div className="motion-title"><p className="motion-kicker">A NEW LIGHT, A NEW YEAR</p><p className="motion-year">2027</p><h1 lang={t.contentLang}>{params.lang === 'ko' ? '새로운 빛으로, 함께 그리는 내일' : t.headline}</h1><p className="motion-season">Season’s Greetings</p></div>

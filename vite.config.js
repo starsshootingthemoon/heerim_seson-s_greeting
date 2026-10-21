@@ -16,10 +16,10 @@ export default defineConfig(({ command, mode, isPreview }) => {
       name: 'static-common-open-graph',
       transformIndexHtml: {
         order: 'pre',
-        handler: html => html.replaceAll('__V2_OG_IMAGE_URL__', new URL('assets/v2/architecture-dusk.webp', site).href).replaceAll('__SITE_URL__', site.href).replaceAll('__OG_IMAGE_URL__', new URL('assets/og-card-wide.png', site).href),
+        handler: html => html.replaceAll('__V3_OG_IMAGE_URL__', new URL('assets/v3/poster.webp', site).href).replaceAll('__V2_OG_IMAGE_URL__', new URL('assets/v2/architecture-dusk.webp', site).href).replaceAll('__SITE_URL__', site.href).replaceAll('__OG_IMAGE_URL__', new URL('assets/og-card-wide.png', site).href),
       },
     }],
     server: { host: '127.0.0.1' },
-    build: { target: 'es2022', rollupOptions: { input: { main: fileURLToPath(new URL('./index.html', import.meta.url)), v2: fileURLToPath(new URL('./v2/index.html', import.meta.url)) } } },
+    build: { target: 'es2022', rollupOptions: { input: { main: fileURLToPath(new URL('./index.html', import.meta.url)), v2: fileURLToPath(new URL('./v2/index.html', import.meta.url)), v3: fileURLToPath(new URL('./v3/index.html', import.meta.url)) } } },
   };
 });
