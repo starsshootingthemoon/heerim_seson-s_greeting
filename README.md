@@ -45,7 +45,7 @@ React 텍스트 출력과 URLSearchParams 인코딩을 사용하며 HTML을 삽�
 
 Figma의 양, 봉투, 하프톤 건축 이미지, 공유 아이콘과 공통 링크 썸네일을 그대로 다운로드했습니다. 대응 관계는 `design/assets.json`에 기록했습니다. `design/reference-*.png`는 비교용이며 웹 화면의 배경으로 사용하지 않습니다. 폰트는 디자인과 같은 Cormorant Garamond, Noto Serif KR, Noto Sans KR를 패키지로 포함하므로 외부 폰트 서버가 필요하지 않습니다.
 
-건축 이미지는 WebP 약 240KB를 우선 사용하고 PNG 폴백을 제공합니다. 이미지 아래쪽의 흰색 페이드와 마스크는 Figma에 맞췄습니다. 공유 썸네일은 `public/assets/og-card.png`입니다.
+건축 이미지는 WebP 약 240KB를 우선 사용하고 PNG 폴백을 제공합니다. 이미지 아래쪽의 흰색 페이드와 마스크는 Figma에 맞췄습니다. 공유 썸네일은 `public/assets/og-card-v2.png`입니다.
 
 ## GitHub Pages 배포
 
