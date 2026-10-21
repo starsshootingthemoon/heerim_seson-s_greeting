@@ -1,3 +1,4 @@
+import Logo from './Logo.jsx';
 import React, { useEffect, useRef, useState } from 'react';
 import { getTranslation, languages, translations } from './data/translations.js';
 import { getSender, messageOptions, senders } from './data/senders.js';
@@ -10,7 +11,7 @@ const locationState = () => ({ params: readPersonalization(window.location.searc
 
 function Header({ lang, onLanguage }) {
   return <header className="card-header">
-    <a className="wordmark" href={import.meta.env.BASE_URL} aria-label="HEERIM 2027 연하장 첫 화면">heerim</a>
+    <a className="wordmark" href={import.meta.env.BASE_URL} aria-label="HEERIM 2027 연하장 첫 화면"><Logo /></a>
     <nav className="language-menu" aria-label="연하장 언어 선택">
       {languages.map(({ code, short, label }) => <button key={code} type="button" lang="en" aria-label={label} aria-pressed={lang === code} onClick={() => onLanguage(code)}>{short}</button>)}
     </nav>
@@ -42,7 +43,7 @@ function Cover({ params, onOpen, opening, onLanguage }) {
     <p className="cover-recipient">{recipientLabel(params)}</p>
     <button className="primary open-button" onClick={onOpen} disabled={opening}>{opening ? '인사를 열고 있습니다…' : t.ui.open} <span aria-hidden="true">↗</span></button>
     <p className="cover-tagline">{t.ui.tag}</p>
-    <footer className="card-footer" lang="en">HEERIM ARCHITECTS &amp; PLANNERS</footer>
+    <footer className="card-footer"><Logo /></footer>
   </article>;
 }
 
@@ -69,7 +70,7 @@ function Greeting({ params, onLanguage, headingRef }) {
     </div>
     <figure className="architecture">
       <picture style={{ maskImage: `url("${asset('architecture-mask.svg')}")` }}><source srcSet={asset('architecture.webp')} type="image/webp" /><img src={asset('architecture.png')} width="1536" height="1024" loading="lazy" decoding="async" alt="희림건축 정부대전지방합동청사 건축 이미지의 붉은 하프톤" /></picture>
-      <figcaption>HEERIM</figcaption>
+      <figcaption><Logo /></figcaption>
     </figure>
   </article>;
 }
@@ -134,7 +135,7 @@ function Generator({ initialParams }) {
   }
   return <section className="generator-page">
     <form className="generator-form" ref={formRef} onSubmit={submit} noValidate>
-      <p className="studio-label" lang="en">HEERIM / GREETING STUDIO</p>
+      <div className="studio-label"><Logo /><span lang="en">GREETING STUDIO</span></div>
       <h1>연하장 생성</h1>
       <p className="form-intro">수신자와 전달 언어를 선택하면<br />준비된 언어별 인사말을 적용합니다.</p>
       {input('to', '01  받는 분', '이름', true)}

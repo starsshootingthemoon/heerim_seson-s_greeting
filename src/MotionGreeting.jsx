@@ -1,3 +1,4 @@
+import Logo from './Logo.jsx';
 import React, { useEffect, useState } from 'react';
 import { getTranslation, languages } from './data/translations.js';
 import { readPersonalization, recipientLabel } from './lib/personalization.js';
@@ -36,16 +37,16 @@ export default function MotionGreeting() {
           </g>
         </svg>
       </div>
-      <header className="motion-header"><span className="motion-logo">heerim</span><nav aria-label="언어 선택">{languages.map(l => <button key={l.code} aria-pressed={params.lang === l.code} onClick={() => language(l.code)}>{l.short}</button>)}</nav></header>
+      <header className="motion-header"><Logo light className="motion-logo" /><nav aria-label="언어 선택">{languages.map(l => <button key={l.code} aria-pressed={params.lang === l.code} onClick={() => language(l.code)}>{l.short}</button>)}</nav></header>
       <div className="motion-title"><p className="motion-kicker">A NEW LIGHT, A NEW YEAR</p><p className="motion-year">2027</p><h1 lang={t.contentLang}>{params.lang === 'ko' ? '새로운 빛으로, 함께 그리는 내일' : t.headline}</h1><p className="motion-season">Season’s Greetings</p></div>
-      <div className="motion-caption"><span>HEERIM ARCHITECTS &amp; PLANNERS</span><button type="button" onClick={() => setPaused(p => !p)} aria-pressed={paused}>{paused ? '모션 재생' : '모션 일시정지'}</button></div>
+      <div className="motion-caption"><Logo light className="motion-caption-logo" /><button type="button" onClick={() => setPaused(p => !p)} aria-pressed={paused}>{paused ? '모션 재생' : '모션 일시정지'}</button></div>
     </section>
     <section className="motion-message" aria-label="맞춤 새해 인사">
       <p className="motion-message-label">WITH OUR SINCERE GRATITUDE</p>
       <h2>{recipientLabel(params, true)}</h2>
       {t.greeting.map((p, i) => <p lang={t.contentLang} className="motion-paragraph" key={i}>{p}</p>)}
       <p className="motion-sender">{sender.name}{params.lang === 'ko' ? ' 드림' : ''}{sender.title && <span>{sender.title}</span>}</p>
-      <footer><span className="motion-logo">heerim</span><span>2027 NEW YEAR GREETING</span></footer>
+      <footer><Logo className="motion-logo" /><span>2027 NEW YEAR GREETING</span></footer>
     </section>
   </main>;
 }
