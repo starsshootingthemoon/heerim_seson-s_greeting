@@ -28,3 +28,5 @@
 @media(max-width:359px){.scenic-greeting .card-header{margin-inline:5%}.scenic-greeting .wordmark{width:96px}.scenic-greeting .language-menu button{font-size:10px;padding-inline:4px}.scenic-greeting .personalized-message{width:calc(100% - 40px)}}
 
 .scenic-greeting .message-recipient{color:#fff}@media(prefers-reduced-motion:reduce){.scenic-snow{display:none}}
+
+.scenic-year{font:400 clamp(78px,12vw,118px)/1.05 var(--latin);margin:0 0 20px;letter-spacing:-2px;color:#fff}.scenic-greeting .greeting-heading{padding-top:30px}.scenic-greeting .greeting-heading h1{font-size:clamp(24px,3vw,32px)}@media(min-width:1000px){.scenic-greeting .greeting-heading{padding-top:30px}.scenic-greeting .personalized-message{margin-top:28px}.scenic-layout .scenic-greeting{min-height:max(1000px,100svh)}}

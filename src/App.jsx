@@ -1,14 +1,14 @@
 import Logo from './Logo.jsx';
 import ScenicSnow from './ScenicSnow.jsx';
 import React, { useEffect, useRef, useState } from 'react';
-import { getTranslation, languages, translations } from './data/translations.js';
+import { getTranslation, languages } from './data/translations.js';
 import { getSender, messageOptions, senders } from './data/senders.js';
 import { createGreetingUrl, LIMITS, readPersonalization, recipientLabel, validateForm } from './lib/personalization.js';
 import { copyLink, shareLink } from './lib/share.js';
 
 const asset = name => `${import.meta.env.BASE_URL}assets/${name}`;
 const pageUrl = () => new URL(import.meta.env.BASE_URL, window.location.origin).href;
-const locationState = () => ({ params: readPersonalization(window.location.search), view: window.location.hash === '#generator' ? 'generator' : window.location.hash === '#greeting' ? 'greeting' : 'cover' });
+const locationState = () => ({ params: readPersonalization(window.location.search), view: window.location.hash === '#generator' ? 'generator' : 'greeting' });
 
 function Header({ lang, onLanguage, light = false }) {
   return <header className="card-header">
@@ -17,35 +17,6 @@ function Header({ lang, onLanguage, light = false }) {
       {languages.map(({ code, short, label }) => <button key={code} type="button" lang="en" aria-label={label} aria-pressed={lang === code} onClick={() => onLanguage(code)}>{short}</button>)}
     </nav>
   </header>;
-}
-
-function Envelope({ opening }) {
-  return <div className={`envelope-scene${opening ? ' is-opening' : ''}`} aria-hidden="true">
-    <div className="envelope-back asset-layer"><img src={asset('envelope-back.svg')} width="316.194" height="307.16" alt="" /></div>
-    <div className="envelope-card">
-      <p>H A P P Y&nbsp;&nbsp; N E W&nbsp;&nbsp; Y E A R</p>
-      <div className="envelope-sheep asset-layer"><img src={asset('sheep.svg')} width="215.012" height="149.966" alt="" fetchPriority="high" /></div>
-    </div>
-    <div className="envelope-front asset-layer"><img src={asset('envelope-front.svg')} width="316.194" height="185.199" alt="" /></div>
-    <span className="for-you">FOR YOU</span>
-  </div>;
-}
-
-function Cover({ params, onOpen, opening, onLanguage }) {
-  const t = getTranslation(params.lang);
-  return <article className={`greeting-card cover${opening ? ' opening' : ''}`}>
-    <Header lang={params.lang} onLanguage={onLanguage} />
-    <div className="cover-intro">
-      <p className="eyebrow" lang="en">A NEW YEAR, FOR YOU</p>
-      <h1 className="year-title">2026</h1>
-      <p className="year-caption" lang={params.lang === 'ko' ? 'ko' : t.year === translations.ko.year ? 'ko' : params.lang}>{t.year}</p>
-    </div>
-    <Envelope opening={opening} />
-    <p className="cover-recipient">{recipientLabel(params)}</p>
-    <button className="primary open-button" onClick={onOpen} disabled={opening}>{opening ? '인사를 열고 있습니다…' : t.ui.open} <span aria-hidden="true">↗</span></button>
-    <p className="cover-tagline">{t.ui.tag}</p>
-    <footer className="card-footer"><Logo /></footer>
-  </article>;
 }
 
 function Greeting({ params, onLanguage, headingRef }) {
@@ -59,8 +30,9 @@ function Greeting({ params, onLanguage, headingRef }) {
     <Header lang={params.lang} onLanguage={onLanguage} light />
     <div className="greeting-heading">
       {params.to && <p className="to-line">TO. {params.to}{params.lang === 'ko' ? ' 님' : ''}</p>}
+      <p className="scenic-year" lang="en">2026</p>
       <h1 ref={headingRef} tabIndex={-1} lang={t.contentLang}>{t.headline}</h1>
-      <p className="sheep-year" lang="en">2026 · SEASON’S GREETINGS</p>
+      <p className="sheep-year" lang="en">SEASON’S GREETINGS</p>
     </div>
     <div className="personalized-message">
       {recipientLabel(params, true) && <p className="message-recipient">{recipientLabel(params, true)}</p>}
@@ -185,14 +157,12 @@ function Generator({ initialParams }) {
 
 export default function App() {
   const [location, setLocation] = useState(locationState);
-  const [opening, setOpening] = useState(false);
-  const timer = useRef(null);
   const heading = useRef(null);
   const { params, view } = location;
   useEffect(() => {
-    const sync = () => { setLocation(locationState()); setOpening(false); window.scrollTo({ top: 0, behavior: 'instant' }); };
+    const sync = () => { setLocation(locationState()); window.scrollTo({ top: 0, behavior: 'instant' }); };
     window.addEventListener('hashchange', sync); window.addEventListener('popstate', sync);
-    return () => { window.removeEventListener('hashchange', sync); window.removeEventListener('popstate', sync); clearTimeout(timer.current); };
+    return () => { window.removeEventListener('hashchange', sync); window.removeEventListener('popstate', sync); };
   }, []);
   useEffect(() => {
     document.documentElement.lang = getTranslation(params.lang).contentLang;
@@ -206,19 +176,11 @@ export default function App() {
     window.history.replaceState({}, '', url);
     setLocation(s => ({ ...s, params: { ...s.params, lang } }));
   }
-  function openGreeting() {
-    if (opening) return;
-    setOpening(true);
-    const delay = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 650;
-    timer.current = window.setTimeout(() => { window.location.hash = 'greeting'; }, delay);
-  }
   return <>
     <a className="skip-link" href="#main" onClick={e => { e.preventDefault(); document.getElementById('main').focus(); }}>본문으로 바로가기</a>
-    <main id="main" tabIndex={-1} className={view === 'generator' ? 'generator-layout' : view === 'greeting' ? 'scenic-layout' : 'card-layout'}>
-      {view === 'generator' ? <Generator initialParams={params} /> : view === 'greeting' ? <Greeting params={params} onLanguage={onLanguage} headingRef={heading} /> : <Cover params={params} onLanguage={onLanguage} onOpen={openGreeting} opening={opening} />}
+    <main id="main" tabIndex={-1} className={view === 'generator' ? 'generator-layout' : 'scenic-layout'}>
+      {view === 'generator' ? <Generator initialParams={params} /> : <Greeting params={params} onLanguage={onLanguage} headingRef={heading} />}
     </main>
-    {view === 'greeting' && <nav className="utility-nav" aria-label="연하장 추가 메뉴">
-      <a href="#">{getTranslation(params.lang).ui.back}</a>
-    </nav>}
+
   </>;
 }

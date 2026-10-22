@@ -30,12 +30,8 @@ try {
     await page.setViewportSize({ width, height: 900 });
     await page.goto(url('?to=홍길동&company=ABC%20건축&lang=ko&from=heerim'));
     await ready(); await noOverflow(`cover ${width}`);
-    assert.match(await page.locator('.cover-recipient').textContent(), /홍길동/);
-    await page.screenshot({ path: `test-results/cover-${width}.png`, fullPage: true });
-    const coverAssets = await assetGeometry();
-    assert.ok(coverAssets.every(a => a.loaded && a.bounds[0] > 0 && a.bounds[1] > 0));
-    await page.getByRole('button', { name: /새해 인사 열어보기/ }).click();
-    await page.waitForURL('**#greeting');
+    assert.equal(await page.locator('.envelope-scene, .utility-nav').count(), 0);
+    assert.equal(await page.locator('.scenic-year').textContent(), '2026');
     await page.getByRole('heading', { name: /새로운 해/ }).waitFor();
     await page.locator('.scenic-background-image').scrollIntoViewIfNeeded();
     await page.waitForFunction(() => [...document.querySelectorAll('.scenic-background-image')].every(i => i.complete && i.naturalWidth));
@@ -44,7 +40,7 @@ try {
     const greetingAssets = await assetGeometry();
     assert.ok(greetingAssets.every(a => a.loaded && a.bounds[0] > 0));
     assert.ok(!(await page.locator('.personalized-message').innerText()).includes('2027'));
-    results.push({ width, coverAssets, greetingAssets });
+    results.push({ width, greetingAssets });
   }
 
   await page.setViewportSize({ width: 390, height: 844 });
@@ -97,8 +93,8 @@ try {
   assert.equal(await modal.isVisible(), false);
   assert.equal(await page.getByRole('button', { name: /맞춤 연하장 링크 생성/ }).evaluate(n => n === document.activeElement), true);
   await page.getByRole('button', { name: /연하장 미리보기 열기/ }).click();
-  await page.frameLocator('iframe').locator('.cover-recipient').waitFor();
-  assert.equal(await page.frameLocator('iframe').locator('.cover-recipient').textContent(), '');
+  await page.frameLocator('iframe').locator('.scenic-year').waitFor();
+  assert.equal(await page.frameLocator('iframe').locator('.scenic-year').textContent(), '2026');
   await page.goto(`${generated.href}#greeting`);
   await page.reload();
   assert.match(await page.locator('.sender-name').textContent(), /홍길동/);
@@ -108,12 +104,11 @@ try {
   const animated = await browser.newContext({ viewport: { width: 375, height: 812 }, reducedMotion: 'no-preference' });
   const animatedPage = await animated.newPage();
   await animatedPage.goto(root);
-  await animatedPage.getByRole('button', { name: /새해 인사 열어보기/ }).click();
-  await animatedPage.locator('.is-opening').waitFor();
-  await animatedPage.waitForURL('**#greeting');
+  await animatedPage.locator('.scenic-year').waitFor();
+  assert.equal(await animatedPage.locator('.envelope-scene').count(), 0);
   await animated.close();
   assert.deepEqual(issues, []);
-  await writeFile('test-results/browser-results.json', JSON.stringify({ status: 'passed', url: root, results, consoleErrors: issues, checks: ['mobile widths', 'asset geometry', 'long content', 'URL encoding', 'XSS text rendering', 'all locales', 'pending translation fallback', 'form errors', 'custom sender', 'copy/share fallback', 'clipboard denial', 'native dialog Escape and focus', 'iframe preview', 'refresh', 'envelope animation', 'reduced motion'] }, null, 2));
+  await writeFile('test-results/browser-results.json', JSON.stringify({ status: 'passed', url: root, results, consoleErrors: issues, checks: ['mobile widths', 'asset geometry', 'long content', 'URL encoding', 'XSS text rendering', 'all locales', 'pending translation fallback', 'form errors', 'custom sender', 'copy/share fallback', 'clipboard denial', 'native dialog Escape and focus', 'iframe preview', 'refresh', 'direct greeting entry', 'reduced motion'] }, null, 2));
   console.log('PASS: 5 viewports, 5 locales, personalization, assets, form, modal, clipboard/share, preview and refresh.');
 } finally {
   await browser.close();

@@ -16,7 +16,7 @@ export default defineConfig(({ command, mode, isPreview }) => {
       name: 'static-common-open-graph',
       transformIndexHtml: {
         order: 'pre',
-        handler: html => html.replaceAll('__V3_OG_IMAGE_URL__', new URL('assets/v3/poster.webp', site).href).replaceAll('__V2_OG_IMAGE_URL__', new URL('assets/v2/architecture-dusk.webp', site).href).replaceAll('__SITE_URL__', site.href).replaceAll('__OG_IMAGE_URL__', new URL('assets/og-card-gray-2026.png', site).href),
+        handler: html => html.replaceAll('__V3_OG_IMAGE_URL__', new URL('assets/v3/poster.webp', site).href).replaceAll('__V2_OG_IMAGE_URL__', new URL('assets/v2/architecture-dusk.webp', site).href).replaceAll('__SITE_URL__', site.href).replaceAll('__OG_IMAGE_URL__', new URL('assets/greeting-background.webp', site).href),
       },
     }],
     server: { host: '127.0.0.1' },
