@@ -1,5 +1,7 @@
 import Logo from './Logo.jsx';
 import ScenicSnow from './ScenicSnow.jsx';
+import ScreenCopy from './ScreenCopy.jsx';
+import './screen.css';
 import React, { useEffect, useRef, useState } from 'react';
 import { getTranslation, languages } from './data/translations.js';
 import { getSender, messageOptions, senders } from './data/senders.js';
@@ -24,25 +26,11 @@ function Greeting({ params, onLanguage, headingRef }) {
   const sender = getSender(params);
   const paragraphs = messageOptions[params.message].paragraphIndexes.map(i => t.greeting[i]);
   const [snowPaused, setSnowPaused] = useState(false);
-  return <article className={`greeting-card greeting-view scenic-greeting${snowPaused ? ' snow-paused' : ''}`} style={{ '--scenic-background': `url("${asset('greeting-background.webp')}")` }}>
+  return <article className={`greeting-card greeting-view scenic-greeting one-screen${snowPaused ? ' snow-paused' : ''}`} style={{ '--scenic-background': `url("${asset('greeting-background.webp')}")` }}>
     <img className="scenic-background-image" src={asset('greeting-background.webp')} alt="" aria-hidden="true" />
     <ScenicSnow />
     <Header lang={params.lang} onLanguage={onLanguage} light />
-    <div className="greeting-heading">
-      {params.to && <p className="to-line">TO. {params.to}{params.lang === 'ko' ? ' 님' : ''}</p>}
-      <p className="scenic-year" lang="en">2026</p>
-      <h1 ref={headingRef} tabIndex={-1} lang={t.contentLang}>{t.headline}</h1>
-      <p className="sheep-year" lang="en">SEASON’S GREETINGS</p>
-    </div>
-    <div className="personalized-message">
-      {recipientLabel(params, true) && <p className="message-recipient">{recipientLabel(params, true)}</p>}
-      {paragraphs.map((p, i) => <p className="message-paragraph reveal" lang={t.contentLang} key={`${params.lang}-${i}`}>{p}</p>)}
-      <div className="sender-block reveal">
-        <p className="sender-name">{sender.name}{params.lang === 'ko' ? ' 드림' : ''}</p>
-        {sender.title && <p className="sender-title">{sender.title}</p>}
-        {sender.signature && <img className="signature" src={`${import.meta.env.BASE_URL}${sender.signature}`} alt={`${sender.name} 서명`} loading="lazy" />}
-      </div>
-    </div>
+    <ScreenCopy params={params} />
     <footer className="scenic-footer"><Logo light /><button className="snow-control" type="button" aria-pressed={snowPaused} onClick={() => setSnowPaused(p => !p)}>{snowPaused ? '배경 모션 재생' : '배경 모션 정지'}</button></footer>
   </article>;
 }

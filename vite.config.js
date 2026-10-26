@@ -20,6 +20,6 @@ export default defineConfig(({ command, mode, isPreview }) => {
       },
     }],
     server: { host: '127.0.0.1' },
-    build: { target: 'es2022', rollupOptions: { input: { main: fileURLToPath(new URL('./index.html', import.meta.url)), v2: fileURLToPath(new URL('./v2/index.html', import.meta.url)), v3: fileURLToPath(new URL('./v3/index.html', import.meta.url)) } } },
+    build: { target: 'es2022', rollupOptions: { input: { main: fileURLToPath(new URL('./index.html', import.meta.url)), v2: fileURLToPath(new URL('./v2/index.html', import.meta.url)), v3: fileURLToPath(new URL('./v3/index.html', import.meta.url)), v4: fileURLToPath(new URL('./v4/index.html', import.meta.url)) } } },
   };
 });

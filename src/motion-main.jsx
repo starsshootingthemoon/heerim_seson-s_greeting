@@ -6,4 +6,5 @@ import '@fontsource/cormorant-garamond/400.css';
 import '@fontsource/cormorant-garamond/400-italic.css';
 import './styles.css';
 import MotionGreeting from './MotionGreeting.jsx';
-createRoot(document.getElementById('root')).render(<MotionGreeting video={window.location.pathname.split('/').includes('v3')} />);
+import OutlineGreeting from './OutlineGreeting.jsx';
+createRoot(document.getElementById('root')).render(window.location.pathname.split('/').includes('v4') ? <OutlineGreeting /> : <MotionGreeting video={window.location.pathname.split('/').includes('v3')} />);
