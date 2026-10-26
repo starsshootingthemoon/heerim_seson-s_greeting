@@ -28,7 +28,7 @@ export default function MotionGreeting({ video = false }) {
     history.replaceState({}, '', url); document.documentElement.lang = lang;
     setParams(p => ({ ...p, lang }));
   }
-  return <main className={`motion-greeting one-screen-shell${video ? ' motion-video-version' : ''}${paused ? ' motion-paused' : ''}`}>
+  return <main className={`motion-greeting one-screen-shell${video ? ' motion-video-version' : ''}${paused ? ' motion-paused' : ''}${video && (completed || reduced) ? ' is-reading' : ''}`}>
     <section className="motion-scene" aria-label={video ? '건축물의 완성 과정을 담은 2026 새해 인사' : '건축물의 윤곽을 따라 빛이 흐르는 2026 새해 인사'}>
       <div className="motion-camera">
         {video ? <video ref={videoRef} className="motion-film" muted playsInline onEnded={() => setCompleted(true)} autoPlay={!paused} preload="auto" poster={`${import.meta.env.BASE_URL}assets/v3/poster.webp`} aria-label="건축물 완성 과정 영상">
