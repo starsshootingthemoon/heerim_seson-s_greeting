@@ -1,3 +1,4 @@
+import HomeLink from './HomeLink.jsx';
 import Logo from './Logo.jsx';
 import ScenicSnow from './ScenicSnow.jsx';
 import ScreenCopy from './ScreenCopy.jsx';
@@ -31,7 +32,7 @@ function Greeting({ params, onLanguage, headingRef }) {
     <ScenicSnow />
     <Header lang={params.lang} onLanguage={onLanguage} light />
     <ScreenCopy params={params} />
-    <footer className="scenic-footer"><Logo light /><button className="snow-control" type="button" aria-pressed={snowPaused} onClick={() => setSnowPaused(p => !p)}>{snowPaused ? '배경 모션 재생' : '배경 모션 정지'}</button></footer>
+    <footer className="scenic-footer"><Logo light /><div className="footer-controls"><HomeLink /><button className="snow-control" type="button" aria-pressed={snowPaused} onClick={() => setSnowPaused(p => !p)}>{snowPaused ? '배경 모션 재생' : '배경 모션 정지'}</button></div></footer>
   </article>;
 }
 

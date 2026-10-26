@@ -1,0 +1,3 @@
+import { chromium } from 'playwright';
+const browser=await chromium.launch({channel:'chrome'});
+try{const page=await browser.newPage({viewport:{width:390,height:844}});await page.goto((process.env.TEST_URL||'http://127.0.0.1:5173/')+'v4/');await page.waitForTimeout(2000);await page.screenshot({path:'test-results/v4-line-building.png'});await page.waitForTimeout(2600);await page.screenshot({path:'test-results/v4-line-transition.png'});await page.locator('.outline-copy-stage.is-ready').waitFor({timeout:12000});await page.waitForTimeout(1600);await page.screenshot({path:'test-results/v4-line-final.png'});console.log('Captured building tracing, line transition and final outline lettering.');}finally{await browser.close();}

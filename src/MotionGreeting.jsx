@@ -1,3 +1,4 @@
+import HomeLink from './HomeLink.jsx';
 import Logo from './Logo.jsx';
 import React, { useEffect, useRef, useState } from 'react';
 import { getTranslation, languages } from './data/translations.js';
@@ -52,7 +53,7 @@ export default function MotionGreeting({ video = false }) {
       </div>
       <header className="motion-header"><Logo light className="motion-logo" /><nav aria-label="언어 선택">{languages.map(l => <button key={l.code} aria-pressed={params.lang === l.code} onClick={() => language(l.code)}>{l.short}</button>)}</nav></header>
       <div className={`screen-copy-stage ${!video || completed || reduced ? 'video-copy-ready' : 'video-copy-wait'}`}><ScreenCopy params={params} /></div>
-      <div className="motion-caption"><Logo light className="motion-caption-logo" /><div className="motion-caption-controls">{video && completed ? <button className="completion-replay" onClick={() => { const el=videoRef.current; el.currentTime=0; setCompleted(false); setPaused(false); el.play().catch(() => setPaused(true)); }}>다시 보기</button> : <button type="button" onClick={() => setPaused(p => !p)} aria-pressed={paused}>{paused ? '모션 재생' : '모션 일시정지'}</button>}</div></div>
+      <div className="motion-caption"><Logo light className="motion-caption-logo" /><div className="motion-caption-controls"><HomeLink />{video && completed ? <button className="completion-replay" onClick={() => { const el=videoRef.current; el.currentTime=0; setCompleted(false); setPaused(false); el.play().catch(() => setPaused(true)); }}>다시 보기</button> : <button type="button" onClick={() => setPaused(p => !p)} aria-pressed={paused}>{paused ? '모션 재생' : '모션 일시정지'}</button>}</div></div>
     </section>
   </main>;
 }
