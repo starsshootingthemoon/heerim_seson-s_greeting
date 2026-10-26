@@ -25,13 +25,29 @@ function Morph({ onComplete }) {
         return Array.from({length:64},(_,j)=>{const p=path.getPointAtLength(len*j/63);return [(w-900*textScale)/2+(glyph.x+p.x*glyph.scale)*textScale,textY+(glyph.y-p.y*glyph.scale)*textScale];});
       });
       const clamp=x=>Math.min(1,Math.max(0,x)),ease=x=>x*x*(3-2*x);
-      // One continuous thread peels off the roof, winds around both towers, then rises.
-      const P=(x,y)=>project([x,y]).map(v=>v.toFixed(2)).join(' ');
-      const first=letters[0][0];
-      const threadPath=document.createElementNS('http://www.w3.org/2000/svg','path');
-      threadPath.setAttribute('d',`M ${P(533,465)} C ${P(385,445)} ${P(370,670)} ${P(600,720)} C ${P(880,780)} ${P(1070,820)} ${P(950,1040)} C ${P(800,1250)} ${P(380,1180)} ${P(430,930)} C ${P(470,720)} ${P(1050,510)} ${P(1030,800)} C ${P(1010,1080)} ${P(770,1140)} ${P(740,850)} C ${P(720,560)} ${P(640,400)} ${P(700,300)} C ${P(650,200)} ${first[0]+w*.2} ${first[1]+80} ${first[0]} ${first[1]}`);
-      const threadLength=threadPath.getTotalLength();
-      const thread=Array.from({length:360},(_,i)=>{const p=threadPath.getPointAtLength(threadLength*i/359);return [p.x,p.y];});
+      // Tight perspective helices cling to the tower volumes, not free-floating sky loops.
+      const first=letters[0][0],route=[];
+      const add=(x,y,depth=1)=>route.push([...project([x,y]),depth]);
+      for(let i=0;i<=20;i++){const t=i/20;add(533+(470-533)*t,465+85*t);}
+      for(let i=1;i<=160;i++){
+        const t=i/160,a=Math.PI+Math.PI*5*t;
+        const radius=125+12*t;
+        add(595+radius*Math.cos(a),550+505*t+32*Math.sin(a),Math.sin(a));
+      }
+      const lower=document.createElementNS('http://www.w3.org/2000/svg','path');
+      const start=route[route.length-1],at=project([805,1120]);
+      lower.setAttribute('d',`M ${start[0]} ${start[1]} Q ${project([770,1190]).join(' ')} ${at.join(' ')}`);
+      for(let i=1;i<=30;i++){const p=lower.getPointAtLength(lower.getTotalLength()*i/30);route.push([p.x,p.y,1]);}
+      for(let i=1;i<=160;i++){
+        const t=i/160,a=Math.PI+Math.PI*4*t;
+        add(910+(105-15*t)*Math.cos(a),1120-425*t+27*Math.sin(a),Math.sin(a));
+      }
+      const rise=document.createElementNS('http://www.w3.org/2000/svg','path'),last=route[route.length-1];
+      rise.setAttribute('d',`M ${last[0]} ${last[1]} Q ${project([820,640]).join(' ')} ${project([903,616]).join(' ')} C ${project([905,540]).join(' ')} ${first[0]+w*.13} ${first[1]+55} ${first[0]} ${first[1]}`);
+      for(let i=1;i<=90;i++){const p=rise.getPointAtLength(rise.getTotalLength()*i/90);route.push([p.x,p.y,1]);}
+      const lengths=[0];for(let i=1;i<route.length;i++)lengths.push(lengths[i-1]+Math.hypot(route[i][0]-route[i-1][0],route[i][1]-route[i-1][1]));
+      const total=lengths[lengths.length-1];let cursor=1;
+      const thread=Array.from({length:360},(_,i)=>{const d=total*i/359;while(cursor<lengths.length-1&&lengths[cursor]<d)cursor++;const a=route[cursor-1],b=route[cursor],t=(d-lengths[cursor-1])/Math.max(.001,lengths[cursor]-lengths[cursor-1]);return [a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t];});
       const ranks=strokes.map(points=>{const y=points.reduce((v,p)=>v+p[1],0)/points.length;return clamp((y-project([0,465])[1])/(800*scale));});
       const letterLengths=letters.map(points=>points.slice(1).reduce((sum,p,i)=>sum+Math.hypot(p[0]-points[i][0],p[1]-points[i][1]),0));
       const totalLetterLength=letterLengths.reduce((a,b)=>a+b,0);
@@ -53,8 +69,17 @@ function Morph({ onComplete }) {
         if(t>=3.6&&writing<.3){
           const head=Math.min(359,Math.floor(ease(unravel)*359));
           const tail=Math.max(0,head-160+Math.floor(clamp(writing/.3)*160));
-          if(tail<head){ctx.beginPath();for(let j=tail;j<=head;j++){if(j===tail)ctx.moveTo(...thread[j]);else ctx.lineTo(...thread[j]);}
-            ctx.lineWidth=1.3;ctx.strokeStyle='#fff6df';ctx.globalAlpha=.95;ctx.shadowColor='#eef5ff';ctx.shadowBlur=8;ctx.stroke();}
+          if(tail<head){
+            for(const front of [false,true]){
+              ctx.beginPath();let connected=false;
+              for(let j=tail;j<=head;j++){
+                const point=thread[j],visible=front?point[2]>=0:point[2]<0;
+                if(!visible){connected=false;continue;}
+                if(!connected){ctx.moveTo(point[0],point[1]);connected=true;}else ctx.lineTo(point[0],point[1]);
+              }
+              ctx.lineWidth=front?1.2:.7;ctx.strokeStyle='#fff6df';ctx.globalAlpha=front?.95:.09;ctx.shadowColor='#eef5ff';ctx.shadowBlur=front?6:0;ctx.stroke();
+            }
+          }
           if(writing===0){const point=thread[head];ctx.beginPath();ctx.arc(point[0],point[1],1.6,0,Math.PI*2);ctx.fillStyle='#fff';ctx.shadowBlur=12;ctx.fill();}
         }
         if(writing>0){
