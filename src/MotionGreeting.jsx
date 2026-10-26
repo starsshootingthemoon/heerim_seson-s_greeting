@@ -32,7 +32,7 @@ export default function MotionGreeting({ video = false }) {
     <section className="motion-scene" aria-label={video ? '건축물의 완성 과정을 담은 2026 새해 인사' : '건축물의 윤곽을 따라 빛이 흐르는 2026 새해 인사'}>
       <div className="motion-camera">
         {video ? <video ref={videoRef} className="motion-film" muted playsInline onEnded={() => setCompleted(true)} autoPlay={!paused} preload="auto" poster={`${import.meta.env.BASE_URL}assets/v3/poster.webp`} aria-label="건축물 완성 과정 영상">
-          <source src={`${import.meta.env.BASE_URL}assets/v3/architecture.mp4`} type="video/mp4" />
+          <source src={`${import.meta.env.BASE_URL}assets/v3/architecture-clean.mp4`} type="video/mp4" />
         </video> : <svg className="motion-art" viewBox="0 0 1400 1370" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
           <defs>
             <filter id="light-glow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="4" /></filter>

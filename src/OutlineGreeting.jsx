@@ -6,6 +6,7 @@ import { readPersonalization } from './lib/personalization.js';
 import { languages } from './data/translations.js';
 import './outline.css';
 import lettering from './data/morph-lettering.json';
+import sketch from './data/building-sketch.json';
 
 function Morph({ onComplete }) {
   const canvas = useRef(null);
@@ -17,50 +18,59 @@ function Morph({ onComplete }) {
       const w=c.clientWidth,h=c.clientHeight,dpr=Math.min(devicePixelRatio,2);c.width=w*dpr;c.height=h*dpr;ctx.scale(dpr,dpr);
       const scale=Math.max(w/1400,h/1370),ox=(w-1400*scale)/2,oy=(h-1370*scale)/2;
       const project=([x,y])=>[ox+x*scale,oy+y*scale];
-      const outlines=[[[449,1208],[459,532],[533,465],[675,579],[724,648],[751,1120]],[[533,465],[535,1125]],[[818,1121],[818,703],[825,675],[903,616],[943,624],[994,681],[1005,1168]],[[449,1158],[627,1118],[825,1127],[1004,1169]]];
-      // Bilinear facade grids follow the perspective of each building face.
-      const mix=(a,b,t)=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t];
-      const facade=(tl,tr,br,bl,rows,cols)=>{
-        for(let r=1;r<rows;r++){const t=r/rows;outlines.push([mix(tl,bl,t),mix(tr,br,t)]);}
-        for(let col=1;col<cols;col++){const t=col/cols;outlines.push([mix(tl,tr,t),mix(bl,br,t)]);}
-      };
-      facade([459,532],[533,465],[535,1125],[449,1208],32,10);
-      facade([533,465],[675,579],[705,1110],[535,1125],32,16);
-      facade([675,579],[724,648],[751,1120],[705,1110],28,6);
-      // Rounded tower: several narrow faces preserve the curved crown and facade.
-      facade([818,703],[850,657],[855,1133],[820,1121],34,4);
-      facade([850,657],[903,616],[910,1145],[855,1133],34,5);
-      facade([903,616],[943,624],[953,1156],[910,1145],34,4);
-      facade([943,624],[994,681],[1005,1168],[953,1156],34,5);
-      facade([450,1158],[625,1118],[628,1212],[448,1248],5,14);
-      facade([625,1118],[825,1127],[828,1209],[628,1212],5,16);
-      const edges=[];for(const a of outlines)for(let i=1;i<a.length;i++)edges.push([project(a[i-1]),project(a[i])]);
+      const strokes=sketch.map(points=>points.map(project));
       const textScale=Math.min((w*.90)/900,.85),textY=88;
-      const curves=edges.map((edge,i)=>{
-        const glyph=lettering[i%lettering.length];
+      const letters=lettering.map(glyph=>{
         const path=document.createElementNS('http://www.w3.org/2000/svg','path');path.setAttribute('d',glyph.d);const len=path.getTotalLength();
-        const target=Array.from({length:48},(_,j)=>{const p=path.getPointAtLength(len*j/47);return [(w-900*textScale)/2+(glyph.x+p.x*glyph.scale)*textScale,textY+(glyph.y-p.y*glyph.scale)*textScale];});
-        const [a,b]=edge;return {target,source:target.map((_,j)=>[a[0]+(b[0]-a[0])*j/47,a[1]+(b[1]-a[1])*j/47])};
+        return Array.from({length:64},(_,j)=>{const p=path.getPointAtLength(len*j/63);return [(w-900*textScale)/2+(glyph.x+p.x*glyph.scale)*textScale,textY+(glyph.y-p.y*glyph.scale)*textScale];});
       });
+      const clamp=x=>Math.min(1,Math.max(0,x)),ease=x=>x*x*(3-2*x);
+      const hub=[w*.5,textY+160*textScale];
       const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;let beginning;
-      const draw=now=>{if(disposed)return;beginning??=now;const t=reduced?9:(now-beginning)/1000,raw=Math.min(1,Math.max(0,(t-4.5)/3.5)),p=raw*raw*(3-2*raw);ctx.clearRect(0,0,w,h);ctx.lineCap='round';ctx.lineJoin='round';
-        ctx.beginPath();
-        for(let i=0;i<curves.length;i++){
-          const line=curves[i],progress=t<4.5?Math.min(1,Math.max(0,(t-i/curves.length*.9)/1.8)):1;if(!progress)continue;
-          const count=Math.max(2,Math.floor(progress*48));
-          for(let j=0;j<count;j++){const a=line.source[j],b=line.target[j];const bend=Math.sin(p*Math.PI)*Math.sin(i*.9)*w*.06;const x=a[0]+(b[0]-a[0])*p+bend,y=a[1]+(b[1]-a[1])*p;if(j===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);}
+      const draw=now=>{
+        if(disposed)return;beginning??=now;const t=reduced?10:(now-beginning)/1000;
+        ctx.clearRect(0,0,w,h);ctx.lineCap='round';ctx.lineJoin='round';
+        // Architectural sketch strokes collect into one stream, rather than mapping to letters.
+        if(t<6.5){
+          const gather=ease(clamp((t-4.3)/2.2));ctx.beginPath();
+          for(let i=0;i<strokes.length;i++){
+            const points=strokes[i],reveal=clamp((t-i/strokes.length*.9)/2.3),count=Math.ceil(points.length*reveal);
+            for(let j=0;j<count;j++){
+              const a=points[j],angle=i*.61+j/Math.max(1,points.length-1)*1.8;
+              const radius=Math.sin(gather*Math.PI)*(14+18*(i%5)/5);
+              const x=a[0]*(1-gather)+hub[0]*gather+Math.cos(angle)*radius;
+              const y=a[1]*(1-gather)+hub[1]*gather+Math.sin(angle)*radius*.6;
+              if(j===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+            }
+          }
+          ctx.lineWidth=.65;ctx.strokeStyle='#edf3fa';ctx.globalAlpha=.67*(1-gather*.85);ctx.shadowColor='#ccecff';ctx.shadowBlur=1.4;ctx.stroke();
         }
-        ctx.strokeStyle=p===1?'#fff5de':'#eef7ff';ctx.lineWidth=p===1?.8:.55;ctx.shadowColor='#ccecff';ctx.shadowBlur=p===1?2:2.5;ctx.globalAlpha=p===1?.95:.48;ctx.stroke();
-        ctx.shadowBlur=0;ctx.globalAlpha=1;if(p===1){onComplete();return;}frame=requestAnimationFrame(draw);
+        // The collected ribbon becomes the pen that writes a single title.
+        const writing=clamp((t-6.4)/2.7);
+        if(t>=5.1&&writing<1){
+          const flow=clamp((t-5.1)/2.2),to=letters[0][0];ctx.beginPath();ctx.moveTo(hub[0],hub[1]);
+          ctx.bezierCurveTo(hub[0]+w*.17,hub[1]+55,hub[0]-w*.12,hub[1]-90,hub[0]+(to[0]-hub[0])*flow,hub[1]+(to[1]-hub[1])*flow);
+          ctx.lineWidth=1.25;ctx.globalAlpha=Math.sin(flow*Math.PI)*.85;ctx.shadowBlur=8;ctx.strokeStyle='#fff5df';ctx.stroke();
+        }
+        if(writing>0){
+          ctx.beginPath();
+          for(let i=0;i<letters.length;i++){
+            const points=letters[i],local=clamp(writing*1.35-i/letters.length*.35),count=Math.ceil(points.length*local);
+            for(let j=0;j<count;j++){if(j===0)ctx.moveTo(...points[j]);else ctx.lineTo(...points[j]);}
+          }
+          ctx.lineWidth=.9;ctx.strokeStyle='#fff5de';ctx.globalAlpha=.98;ctx.shadowColor='#e8d9b5';ctx.shadowBlur=3;ctx.stroke();
+        }
+        ctx.globalAlpha=1;ctx.shadowBlur=0;
+        if(writing===1){onComplete();return;}frame=requestAnimationFrame(draw);
       };frame=requestAnimationFrame(draw);
     }start();return()=>{disposed=true;cancelAnimationFrame(frame);};
   }, [onComplete]);
-  return <canvas ref={canvas} className="outline-canvas" aria-label="건물 외곽을 따라 그려진 빛의 선이 2026 Season’s Greetings 글자 외곽선으로 이어지는 모션" role="img" />;
+  return <canvas ref={canvas} className="outline-canvas" aria-label="건축 선화가 하나의 빛 흐름으로 모인 뒤 2026 Season’s Greetings를 그리는 모션" role="img" />;
 }
 
 export default function OutlineGreeting(){
   const [params,setParams]=useState(()=>readPersonalization(location.search));const[done,setDone]=useState(false);const[run,setRun]=useState(0);
   const complete=React.useCallback(()=>setDone(true),[]);
   useEffect(()=>{document.documentElement.lang=params.lang;},[params.lang]);
-  return <main className="outline-greeting one-screen"><img className="outline-backdrop" src={`${import.meta.env.BASE_URL}assets/v2/architecture-dusk.webp`} alt=""/><header className="motion-header"><Logo light className="motion-logo"/><nav aria-label="언어 선택">{languages.map(l=><button key={l.code} aria-pressed={params.lang===l.code} onClick={()=>{const u=new URL(location.href);u.searchParams.set('lang',l.code);history.replaceState({},'',u);setParams(p=>({...p,lang:l.code}));}}>{l.short}</button>)}</nav></header><Morph key={run} onComplete={complete}/><div className={`outline-copy-stage ${done?'is-ready':''}`}><ScreenCopy params={params} hideHeading/></div><footer className="motion-caption"><Logo light className="motion-caption-logo"/><div className="footer-controls"><HomeLink /><button className="completion-replay" onClick={()=>{setDone(false);setRun(r=>r+1);}}>연출 다시 보기</button></div></footer></main>;
+  return <main className={`outline-greeting one-screen${done ? ' is-complete' : ''}`}><img className="outline-backdrop" src={`${import.meta.env.BASE_URL}assets/v2/architecture-dusk.webp`} alt=""/><header className="motion-header"><Logo light className="motion-logo"/><nav aria-label="언어 선택">{languages.map(l=><button key={l.code} aria-pressed={params.lang===l.code} onClick={()=>{const u=new URL(location.href);u.searchParams.set('lang',l.code);history.replaceState({},'',u);setParams(p=>({...p,lang:l.code}));}}>{l.short}</button>)}</nav></header><Morph key={run} onComplete={complete}/><div className={`outline-copy-stage ${done?'is-ready':''}`}><ScreenCopy params={params} hideHeading/></div><footer className="motion-caption"><Logo light className="motion-caption-logo"/><div className="footer-controls"><HomeLink /><button className="completion-replay" onClick={()=>{setDone(false);setRun(r=>r+1);}}>연출 다시 보기</button></div></footer></main>;
 }
