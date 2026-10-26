@@ -3,3 +3,5 @@
 .outline-canvas{top:0;left:0;transform:none;width:100%;height:100%;pointer-events:none;z-index:2}.outline-copy-stage{z-index:3}.outline-copy-stage .screen-copy{top:clamp(235px,38svh,330px)}.outline-backdrop{object-position:center;opacity:.24}@media(max-height:650px){.outline-canvas{top:0;height:100%}.outline-copy-stage .screen-copy{top:220px}}
 
 .outline-backdrop{transition:opacity 2s ease,filter 2s ease}.outline-greeting.is-complete .outline-backdrop{opacity:1;filter:none}.outline-greeting::after{content:'';position:absolute;inset:0;z-index:0;pointer-events:none;background:linear-gradient(#07132166,#07132188 55%,#07132122);opacity:0;transition:opacity 2s}.outline-greeting.is-complete::after{opacity:1}@media(prefers-reduced-motion:reduce){.outline-backdrop,.outline-greeting::after{transition:none}}
+
+.outline-copy-stage .screen-copy{top:calc(clamp(235px,38svh,330px) + 18px)}@media(max-height:650px){.outline-copy-stage .screen-copy{top:238px}}
