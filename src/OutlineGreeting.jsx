@@ -18,22 +18,39 @@ function Morph({ onComplete }) {
       const scale=Math.max(w/1400,h/1370),ox=(w-1400*scale)/2,oy=(h-1370*scale)/2;
       const project=([x,y])=>[ox+x*scale,oy+y*scale];
       const outlines=[[[449,1208],[459,532],[533,465],[675,579],[724,648],[751,1120]],[[533,465],[535,1125]],[[818,1121],[818,703],[825,675],[903,616],[943,624],[994,681],[1005,1168]],[[449,1158],[627,1118],[825,1127],[1004,1169]]];
-      for(let y=650;y<1100;y+=75)outlines.push([[460,y],[533,y-52],[733,y+81]]);
+      // Bilinear facade grids follow the perspective of each building face.
+      const mix=(a,b,t)=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t];
+      const facade=(tl,tr,br,bl,rows,cols)=>{
+        for(let r=1;r<rows;r++){const t=r/rows;outlines.push([mix(tl,bl,t),mix(tr,br,t)]);}
+        for(let col=1;col<cols;col++){const t=col/cols;outlines.push([mix(tl,tr,t),mix(bl,br,t)]);}
+      };
+      facade([459,532],[533,465],[535,1125],[449,1208],32,10);
+      facade([533,465],[675,579],[705,1110],[535,1125],32,16);
+      facade([675,579],[724,648],[751,1120],[705,1110],28,6);
+      // Rounded tower: several narrow faces preserve the curved crown and facade.
+      facade([818,703],[850,657],[855,1133],[820,1121],34,4);
+      facade([850,657],[903,616],[910,1145],[855,1133],34,5);
+      facade([903,616],[943,624],[953,1156],[910,1145],34,4);
+      facade([943,624],[994,681],[1005,1168],[953,1156],34,5);
+      facade([450,1158],[625,1118],[628,1212],[448,1248],5,14);
+      facade([625,1118],[825,1127],[828,1209],[628,1212],5,16);
       const edges=[];for(const a of outlines)for(let i=1;i<a.length;i++)edges.push([project(a[i-1]),project(a[i])]);
       const textScale=Math.min((w*.90)/900,.85),textY=88;
-      const curves=lettering.map((glyph,i)=>{
+      const curves=edges.map((edge,i)=>{
+        const glyph=lettering[i%lettering.length];
         const path=document.createElementNS('http://www.w3.org/2000/svg','path');path.setAttribute('d',glyph.d);const len=path.getTotalLength();
-        const target=Array.from({length:80},(_,j)=>{const p=path.getPointAtLength(len*j/79);return [(w-900*textScale)/2+(glyph.x+p.x*glyph.scale)*textScale,textY+(glyph.y-p.y*glyph.scale)*textScale];});
-        const [a,b]=edges[i%edges.length];return {target,source:target.map((_,j)=>[a[0]+(b[0]-a[0])*j/79,a[1]+(b[1]-a[1])*j/79])};
+        const target=Array.from({length:48},(_,j)=>{const p=path.getPointAtLength(len*j/47);return [(w-900*textScale)/2+(glyph.x+p.x*glyph.scale)*textScale,textY+(glyph.y-p.y*glyph.scale)*textScale];});
+        const [a,b]=edge;return {target,source:target.map((_,j)=>[a[0]+(b[0]-a[0])*j/47,a[1]+(b[1]-a[1])*j/47])};
       });
       const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;let beginning;
-      const draw=now=>{if(disposed)return;beginning??=now;const t=reduced?9:(now-beginning)/1000,raw=Math.min(1,Math.max(0,(t-3.3)/3.5)),p=raw*raw*(3-2*raw);ctx.clearRect(0,0,w,h);ctx.lineCap='round';ctx.lineJoin='round';
+      const draw=now=>{if(disposed)return;beginning??=now;const t=reduced?9:(now-beginning)/1000,raw=Math.min(1,Math.max(0,(t-4.5)/3.5)),p=raw*raw*(3-2*raw);ctx.clearRect(0,0,w,h);ctx.lineCap='round';ctx.lineJoin='round';
+        ctx.beginPath();
         for(let i=0;i<curves.length;i++){
-          const line=curves[i],progress=t<3.3?Math.min(1,Math.max(0,(t-i/curves.length*.9)/1.8)):1;if(!progress)continue;
-          const count=Math.max(2,Math.floor(progress*80));ctx.beginPath();
+          const line=curves[i],progress=t<4.5?Math.min(1,Math.max(0,(t-i/curves.length*.9)/1.8)):1;if(!progress)continue;
+          const count=Math.max(2,Math.floor(progress*48));
           for(let j=0;j<count;j++){const a=line.source[j],b=line.target[j];const bend=Math.sin(p*Math.PI)*Math.sin(i*.9)*w*.06;const x=a[0]+(b[0]-a[0])*p+bend,y=a[1]+(b[1]-a[1])*p;if(j===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);}
-          ctx.strokeStyle=p===1?'#fff5de':'#eef7ff';ctx.lineWidth=p===1?.85:1.1;ctx.shadowColor='#ccecff';ctx.shadowBlur=p===1?3:8;ctx.globalAlpha=p===1?.95:.72;ctx.stroke();
         }
+        ctx.strokeStyle=p===1?'#fff5de':'#eef7ff';ctx.lineWidth=p===1?.8:.55;ctx.shadowColor='#ccecff';ctx.shadowBlur=p===1?2:2.5;ctx.globalAlpha=p===1?.95:.48;ctx.stroke();
         ctx.shadowBlur=0;ctx.globalAlpha=1;if(p===1){onComplete();return;}frame=requestAnimationFrame(draw);
       };frame=requestAnimationFrame(draw);
     }start();return()=>{disposed=true;cancelAnimationFrame(frame);};
